@@ -32,7 +32,8 @@ else:
     print(response.status_code)
     print(response.text)
     st.stop()    
-
+st.title(f"saida: {saida[5:]}")
+st.title(f"erro: {erro}")
 # Upload do arquivo CSV
 #st.sidebar.header("Carregar arquivo CSV")
 #uploaded_file = st.sidebar.file_uploader("Escolha um arquivo CSV", type="csv")

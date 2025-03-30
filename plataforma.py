@@ -67,13 +67,21 @@ st.markdown("---")
 with st.form(key="chat_form", clear_on_submit=True):
     mensagem_usuario = st.text_input("Digite sua mensagem:")
     submit = st.form_submit_button("Enviar")
+    if submit and mensagem_usuario:
+        st.session_state.chat_history.append(("Você", mensagem_usuario))
+        with st.spinner("Processando..."):
+            resposta = enviar_mensagem(mensagem_usuario)
+        st.session_state.chat_history.append(("O Filósofo", resposta))
 
+col1, col2 = st.columns([1, 1])
+with col1:
     if st.button("Pesquisa em Artigos Científicos"):
         # Ativa o modo "artigos" ou desativa se já estiver ativo
         if st.session_state.active_mode == "artigos":
             st.session_state.active_mode = "none"
         else:
             st.session_state.active_mode = "artigos"
+with col2:
     if st.button("Pensadores"):
         # Ativa o modo "pensadores" ou desativa se já estiver ativo
         if st.session_state.active_mode == "pensadores":
@@ -84,21 +92,15 @@ with st.form(key="chat_form", clear_on_submit=True):
             if st.session_state.selected_thinker is None:
                 st.session_state.selected_thinker = "Sócrates"
 
-    # Se o modo "pensadores" estiver ativo, mostra um dropdown para seleção do pensador.
-    if st.session_state.active_mode == "pensadores":
-        st.session_state.selected_thinker = st.selectbox(
-            "Selecione o pensador:",
-            options=["Sócrates", "Platão", "Aristóteles", "Descartes"],
-            index=0 if st.session_state.selected_thinker not in ["Sócrates", "Platão", "Aristóteles", "Descartes"] 
-                        else ["Sócrates", "Platão", "Aristóteles", "Descartes"].index(st.session_state.selected_thinker)
-        )
-
-    if submit and mensagem_usuario:
-        st.session_state.chat_history.append(("Você", mensagem_usuario))
-        with st.spinner("Processando..."):
-            resposta = enviar_mensagem(mensagem_usuario)
-        st.session_state.chat_history.append(("O Filósofo", resposta))
-
+# Se o modo "pensadores" estiver ativo, mostra um dropdown para seleção do pensador.
+if st.session_state.active_mode == "pensadores":
+    st.session_state.selected_thinker = st.selectbox(
+        "Selecione o pensador:",
+        options=["Sócrates", "Platão", "Aristóteles", "Descartes"],
+        index=0 if st.session_state.selected_thinker not in ["Sócrates", "Platão", "Aristóteles", "Descartes"] 
+                    else ["Sócrates", "Platão", "Aristóteles", "Descartes"].index(st.session_state.selected_thinker)
+    )
+    
 # Adicionado botão na barra lateral para limpar o histórico de conversas
 if st.sidebar.button("Limpar Histórico de Conversa"):
     st.session_state.chat_history = []

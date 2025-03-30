@@ -17,11 +17,7 @@ if not chave_secreta:
     st.info("Por favor, adicione a sua senha de acesso.", icon="🗝️")
 else:
     st.title("Dashboard de Visualização do comportamento de clientes - O Filósofo")
-
-    # Autenticação: Solicita a chave secreta
-    st.sidebar.header("Autenticação")
-    chave_secreta = st.sidebar.text_input("Insira sua chave", type="password")
-
+    
     # Envio da requisição para a API
     url = "http://52.2.202.37/streamlit/"
     data = {"cliente": chave_secreta,

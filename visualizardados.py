@@ -16,7 +16,7 @@ chave_secreta = st.text_input("Senha de acesso", type="password")
 if not chave_secreta:
     st.info("Por favor, adicione a sua senha de acesso.", icon="🗝️")
 else:
-    st.title("Dashboard de Visualização do comportamento de clientes - O Pensador")
+    st.title("Dashboard de Visualização do comportamento de clientes - O Filósofo")
 
     # Autenticação: Solicita a chave secreta
     st.sidebar.header("Autenticação")

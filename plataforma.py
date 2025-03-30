@@ -48,6 +48,29 @@ def enviar_mensagem(mensagem):
     return saida   
     #return dados.get("mensagem", "")
 
+
+st.markdown("---")
+
+# Área de conversa (exibe histórico)
+st.markdown("## Histórico da Conversa")
+for autor, mensagem in st.session_state.chat_history:
+    if autor == "Você":
+        st.markdown(f"**Você:** {mensagem}")
+    else:
+        st.markdown(f"**O Filósofo:** {mensagem}")
+
+st.markdown("---")
+
+# Campo de entrada para a mensagem do usuário com um formulário (modo apenas input e submit)
+with st.form(key="chat_form", clear_on_submit=True):
+    mensagem_usuario = st.text_input("Digite sua mensagem:")
+    submit = st.form_submit_button("Enviar")
+    if submit and mensagem_usuario:
+        st.session_state.chat_history.append(("Você", mensagem_usuario))
+        with st.spinner("Processando..."):
+            resposta = enviar_mensagem(mensagem_usuario)
+        st.session_state.chat_history.append(("O Filósofo", resposta))
+
 # Área de controle dos modos (botões de ação)
 st.markdown("### Selecione uma funcionalidade:")
 
@@ -77,27 +100,6 @@ if st.session_state.active_mode == "pensadores":
         index=["Sócrates", "Platão", "Aristóteles", "Descartes"].index(st.session_state.selected_thinker)
     )
 
-st.markdown("---")
-
-# Área de conversa (exibe histórico)
-st.markdown("## Histórico da Conversa")
-for autor, mensagem in st.session_state.chat_history:
-    if autor == "Você":
-        st.markdown(f"**Você:** {mensagem}")
-    else:
-        st.markdown(f"**O Filósofo:** {mensagem}")
-
-st.markdown("---")
-
-# Campo de entrada para a mensagem do usuário com um formulário (modo apenas input e submit)
-with st.form(key="chat_form", clear_on_submit=True):
-    mensagem_usuario = st.text_input("Digite sua mensagem:")
-    submit = st.form_submit_button("Enviar")
-    if submit and mensagem_usuario:
-        st.session_state.chat_history.append(("Você", mensagem_usuario))
-        with st.spinner("Processando..."):
-            resposta = enviar_mensagem(mensagem_usuario)
-        st.session_state.chat_history.append(("O Filósofo", resposta))
 
 # Adicionado botão na barra lateral para limpar o histórico de conversas
 #if st.sidebar.button("Limpar Histórico de Conversa"):

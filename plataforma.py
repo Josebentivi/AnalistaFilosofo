@@ -48,9 +48,6 @@ def enviar_mensagem(mensagem):
     return saida   
     #return dados.get("mensagem", "")
 
-
-st.markdown("---")
-
 # Área de conversa (exibe histórico)
 st.markdown("## Histórico da Conversa")
 for autor, mensagem in st.session_state.chat_history:
@@ -58,8 +55,6 @@ for autor, mensagem in st.session_state.chat_history:
         st.markdown(f"**Você:** {mensagem}")
     else:
         st.markdown(f"**O Filósofo:** {mensagem}")
-
-st.markdown("---")
 
 # Campo de entrada para a mensagem do usuário com um formulário (modo apenas input e submit)
 with st.form(key="chat_form", clear_on_submit=True):
@@ -75,7 +70,7 @@ with st.form(key="chat_form", clear_on_submit=True):
 st.markdown("### Selecione uma funcionalidade:")
 
 # Mover a área de controle dos modos para fora do formulário
-col1, col2 = st.columns([1, 1])
+col1, col2, col3, col4  = st.columns([1, 1, 1, 1])
 with col1:
     if st.button("Pesquisa em Artigos Científicos"):
         # Ativa o modo "artigos" ou desativa se já estiver ativo

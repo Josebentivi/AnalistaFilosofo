@@ -99,9 +99,7 @@ with st.form(key="chat_form", clear_on_submit=True):
         with st.spinner("Processando..."):
             resposta = enviar_mensagem(mensagem_usuario)
         st.session_state.chat_history.append(("O Filósofo", resposta))
-        st.experimental_rerun()
 
-    # Adicionado botão na barra lateral para limpar o histórico de conversas
-    if st.sidebar.button("Limpar Histórico de Conversa"):
-        st.session_state.chat_history = []
-        st.experimental_rerun()
+# Adicionado botão na barra lateral para limpar o histórico de conversas
+if st.sidebar.button("Limpar Histórico de Conversa"):
+    st.session_state.chat_history = []

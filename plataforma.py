@@ -78,7 +78,7 @@ local_css(css)
 
 # Conteúdo da sidebar
 with st.sidebar:
-    st.image("https://via.placeholder.com/150x50?text=Logo+PortoPsi", use_column_width=True)
+    st.image("https://via.placeholder.com/150x50?text=Logo+PortoPsi", use_container_width=True)
     st.markdown("<div class='sidebar-content'>", unsafe_allow_html=True)
     # Menu lateral
     menu_items = [

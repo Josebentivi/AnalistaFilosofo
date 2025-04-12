@@ -1,101 +1,160 @@
 import streamlit as st
-import requests
+from streamlit.components.v1 import html
 
-# Configuração da página para layout "wide"
-st.set_page_config(layout="wide", page_title="O Filósofo")
+# Configuração inicial da página
+st.set_page_config(
+    page_title="PortoPsi Dashboard",
+    page_icon=":bar_chart:",
+    layout="wide"
+)
 
-# Inicialização do estado
-if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []  # Lista de tuplas: (autor, mensagem)
-if "active_mode" not in st.session_state:
-    st.session_state.active_mode = "none"  # Valores possíveis: "none", "artigos", "pensadores"
-if "selected_thinker" not in st.session_state:
-    st.session_state.selected_thinker = None
+# Função para estilizar a aplicação com CSS inline
+def local_css(css_text):
+    st.markdown(f'<style>{css_text}</style>', unsafe_allow_html=True)
 
-# Função para enviar mensagem e chamar a API
-def enviar_mensagem(mensagem):
-    payload = {"entrada": mensagem}
-    if st.session_state.active_mode == "artigos":
-        payload["modo"] = "artigos"
-    elif st.session_state.active_mode == "pensadores":
-        payload["modo"] = "pensadores"
-        payload["pensador"] = st.session_state.selected_thinker
+# CSS customizado para simular os elementos do layout (cores, margens, etc)
+css = """
+/* Estilos gerais */
+body {
+    font-family: 'Open Sans', sans-serif;
+}
 
-    try:
-        # Chamada à API (substitua a URL pelo endpoint real)
-        url = "http://52.2.202.37/teste/"
-        data = {"entrada": "string",
-                "livro": "string",
-                "historico": "string",
-                "nivel": "string",
-                "tema": "string"
-                }
-        response = requests.post(url, json=data, timeout=5*60)
-        if response.status_code == 200:  
-            saida = response.json()["saida"]
-            print(saida)
-            erro = response.json()["erro"]
-            print(erro)
-        else:  
-            print("Erro na requisição")
-            print(response.status_code)
-            print(response.text)
-            st.stop()    
-        dados = response.json()
-    except Exception as e:
-        dados = {"mensagem": "Erro ao processar a mensagem."}
-    
-    return saida   
-    #return dados.get("mensagem", "")
+/* Sidebar */
+[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #5a4ea1, #7a68c1);
+}
+.sidebar-content {
+    color: white;
+}
+.sidebar-item {
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+.sidebar-item:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
 
-# Área de conversa (exibe histórico)
-st.markdown("## Histórico da Conversa")
-for autor, mensagem in st.session_state.chat_history:
-    if autor == "Você":
-        st.markdown(f"**Você:** {mensagem}")
-    else:
-        st.markdown(f"**O Filósofo:** {mensagem}")
+/* Barra superior personalizada */
+.topbar {
+    background-color: white;
+    padding: 10px 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
-# Campo de entrada para a mensagem do usuário com um formulário (modo apenas input e submit)
-with st.form(key="chat_form", clear_on_submit=True):
-    mensagem_usuario = st.text_input("Digite sua mensagem:")
-    submit = st.form_submit_button("Enviar")
-    if submit and mensagem_usuario:
-        st.session_state.chat_history.append(("Você", mensagem_usuario))
-        with st.spinner("Processando..."):
-            resposta = enviar_mensagem(mensagem_usuario)
-        st.session_state.chat_history.append(("O Filósofo", resposta))
+/* Estilo para os cards */
+.card {
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    text-align: center;
+}
+.card h3 {
+    margin-bottom: 15px;
+}
 
-# Área de controle dos modos (botões de ação)
-st.markdown("### Selecione uma funcionalidade:")
+/* Botões de ação (cards) */
+.card-button {
+    background-color: #7a68c1;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
+}
+.card-button:hover {
+    background-color: #5a4ea1;
+}
+"""
 
-# Mover a área de controle dos modos para fora do formulário
-col1, col2, col3, col4  = st.columns([1, 1, 1, 1])
+local_css(css)
+
+# Conteúdo da sidebar
+with st.sidebar:
+    st.image("https://via.placeholder.com/150x50?text=Logo+PortoPsi", use_column_width=True)
+    st.markdown("<div class='sidebar-content'>", unsafe_allow_html=True)
+    # Menu lateral
+    menu_items = [
+        {"icone": "📊", "titulo": "Dados da Empresa"},
+        {"icone": "📝", "titulo": "Meus Diagnósticos"},
+        {"icone": "📈", "titulo": "Minhas Intervenções"},
+        {"icone": "➕", "titulo": "Criar um novo projeto"}
+    ]
+    for item in menu_items:
+        st.markdown(
+            f"""<div class='sidebar-item'>{item['icone']} {item['titulo']}</div>""",
+            unsafe_allow_html=True
+        )
+    st.markdown("</div>", unsafe_allow_html=True)
+
+# Criação da barra superior com campo de busca e informações do usuário
+def top_bar():
+    top_bar_html = """
+    <div class="topbar">
+        <div class="topbar-esquerda">
+            <input type="text" placeholder="Pesquisar" style="padding: 8px; width:300px; border-radius:5px; border:1px solid #ccc;">
+        </div>
+        <div class="topbar-direita">
+            <span style="margin-right: 15px; font-weight: bold;">Donna Stroupe</span>
+            <img src="https://via.placeholder.com/40" alt="Avatar" style="border-radius: 50%;">
+        </div>
+    </div>
+    """
+    st.markdown(top_bar_html, unsafe_allow_html=True)
+
+top_bar()
+
+# Layout principal: Cards divididos em seções
+st.markdown("## Avaliação de Risco Psicossocial no Trabalho")
+col1, col2, col3 = st.columns(3)
+
 with col1:
-    if st.button("Pesquisa em Artigos Científicos"):
-        # Ativa o modo "artigos" ou desativa se já estiver ativo
-        if st.session_state.active_mode == "artigos":
-            st.session_state.active_mode = "none"
-        else:
-            st.session_state.active_mode = "artigos"
+    st.markdown("<div class='card'>", unsafe_allow_html=True)
+    st.markdown("<h3>Criar Instrumento de Diagnóstico</h3>", unsafe_allow_html=True)
+    st.button("Acessar", key="diagnostico")
+    st.markdown("</div>", unsafe_allow_html=True)
+
 with col2:
-    if st.button("Pensadores"):
-        # Ativa o modo "pensadores" ou desativa se já estiver ativo
-        if st.session_state.active_mode == "pensadores":
-            st.session_state.active_mode = "none"
-        else:
-            st.session_state.active_mode = "pensadores"
-            if st.session_state.selected_thinker is None:
-                st.session_state.selected_thinker = "Sócrates"
-                
-if st.session_state.active_mode == "pensadores":
-    st.session_state.selected_thinker = st.selectbox(
-        "Selecione o pensador:",
-        options=["Sócrates", "Platão", "Aristóteles", "Descartes"],
-        index=["Sócrates", "Platão", "Aristóteles", "Descartes"].index(st.session_state.selected_thinker)
-    )
+    st.markdown("<div class='card'>", unsafe_allow_html=True)
+    st.markdown("<h3>Analisar Dados Coletados</h3>", unsafe_allow_html=True)
+    st.button("Acessar", key="analise")
+    st.markdown("</div>", unsafe_allow_html=True)
 
+with col3:
+    st.markdown("<div class='card'>", unsafe_allow_html=True)
+    st.markdown("<h3>Extrair Relatórios</h3>", unsafe_allow_html=True)
+    st.button("Acessar", key="relatorios")
+    st.markdown("</div>", unsafe_allow_html=True)
 
-# Adicionado botão na barra lateral para limpar o histórico de conversas
-#if st.sidebar.button("Limpar Histórico de Conversa"):
-#    st.session_state.chat_history = []
+st.markdown("## Planejamento de Intervenção")
+col4, col5, col6 = st.columns(3)
+
+with col4:
+    st.markdown("<div class='card'>", unsafe_allow_html=True)
+    st.markdown("<h3>Gerencie seu Plano de Intervenção</h3>", unsafe_allow_html=True)
+    st.markdown("<p><strong>PPG Concluída</strong></p>", unsafe_allow_html=True)
+    st.button("Visualizar Plano", key="plano")
+    st.markdown("</div>", unsafe_allow_html=True)
+
+with col5:
+    st.markdown("<div class='card'>", unsafe_allow_html=True)
+    st.markdown("<h3>Outra Ação de Intervenção</h3>", unsafe_allow_html=True)
+    st.button("Acessar", key="intervencao_2")
+    st.markdown("</div>", unsafe_allow_html=True)
+
+with col6:
+    st.markdown("<div class='card'>", unsafe_allow_html=True)
+    st.markdown("<h3>Acesse nossa Plataforma de Treinamentos</h3>", unsafe_allow_html=True)
+    st.button("Entrar", key="treinamentos")
+    st.markdown("</div>", unsafe_allow_html=True)
+
+# Informações adicionais ou rodapé (se necessário)
+st.markdown("<hr>", unsafe_allow_html=True)
+st.markdown("© 2025 PortoPsi - Todos os direitos reservados", unsafe_allow_html=True)

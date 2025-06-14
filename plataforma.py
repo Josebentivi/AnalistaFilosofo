@@ -4,7 +4,7 @@ from streamlit.components.v1 import html
 # Configuração inicial da página
 st.set_page_config(
     page_title="PortoPsi Dashboard",
-    page_icon=":bar_chart:",
+    page_icon=":thought_balloon:",
     layout="wide"
 )
 
